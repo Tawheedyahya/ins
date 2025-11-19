@@ -1,0 +1,29 @@
+name: Deploy ins to EC2
+
+on:
+  push:
+    branches:
+      - master      # you are using master branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SSH into EC2 and deploy
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /var/www/html/ins     # <-- CHANGE if different
+
+            echo "Pulling latest code..."
+            git fetch origin
+            git reset --hard origin/master
+
+            echo "Deployment Finished!"
